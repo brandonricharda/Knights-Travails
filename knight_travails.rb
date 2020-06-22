@@ -42,18 +42,23 @@ class Board
 
     end
 
-    def depth_first(node = @list.values, visited = [])
-        return if !node
+    #after some research and experimentation, I realized BFS is the way to do this, rather than DFS
+    #next step is to use this BFS method to calculate the fastest path
 
-        #my brain hurts
-        #basically what I need to do is come up with a method that runs through the entire graph depth-first
-        #right now the node is an array of arrays containing vertexes
-        #I need to recurse through those values
-
+    def breadth_first
+        visited = []
+        q = []
+        q << find(0)
+        until q.empty?
+            visited << q.shift
+            visited.last.adjacent.each do |item|
+                q << item if !visited.include?(item)
+            end
+        end
     end
 
 end
 
 test = Board.new(10)
 
-test.depth_first
+test.breadth_first
