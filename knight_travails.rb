@@ -15,10 +15,11 @@ class Board
 
     def initialize(value)
 
+        @value = value
         @list = {}
         @arr = []
         @vertices = []
-        0.upto(value - 1) { |num| @arr << num }
+        0.upto(@value - 1) { |num| @arr << num }
         
         @arr.each do |row|
             @arr.each do |col|
@@ -27,53 +28,38 @@ class Board
         end
 
         @vertices.each_with_index do |vertex, index|
-            #adds the node's predecessor to its adjacency array, if it exists
-            vertex.adjacent << @vertices[index - 1].data unless index == 0
-            #adds the node's successor to its adjacency array, if it exists
-            vertex.adjacent << @vertices[index + 1].data unless !@vertices[index + 1]
-            #adds the node 'underneath' the current node to its adjacency array, if it exists
-            vertex.adjacent << @vertices[index + value].data unless !@vertices[index + value]
+            #these lines add the node's, predecessor, successor, or underling, respectively
+            #as long as those items exist and do not "wrap around" the board
+            vertex.adjacent << @vertices[index - 1].data unless index == 0 || @vertices[index - 1].data[0] != vertex.data[0]
+            vertex.adjacent << @vertices[index + 1].data unless !@vertices[index + 1] || @vertices[index + 1].data[1] == 0
+            vertex.adjacent << @vertices[index + @value].data unless !@vertices[index + @value]
             @list[vertex.data] = vertex.adjacent
-        end
-
-        #need to refactor the find function so that it navigates the adjacency list
-        #rather than the array of vertexes
-
-        def find(value)
-
-            pointer = @vertices[0]
-            counter = 0
-
-            until pointer.data == value
-                pointer = @vertices[counter]
-                counter += 1
-            end
-
-            pointer.data
-
         end
 
     end
 
-    #I need to refactor this function to work with my new and improved adjacency list structure
+    #breadth_first method works – need to refactor
+    #so that it accepts start and end points
+    #then finds the shortest path between them
 
-    # def breadth_first
-    #     visited = []
-    #     q = []
-    #     q << find(0)
-    #     p q[0].data
-    #     until q.empty?
-    #         visited << q.shift
-    #         visited.last.adjacent.each do |item|
-    #             q << item if !visited.include?(item)
-    #             p item.data if !visited.include?(item)
-    #         end
-    #     end
-    #     visited
-    # end
+    def breadth_first
+        visited = []
+        q = []
+        q << @list.keys[0]
+        
+        until q.empty?
+            visited << q.shift unless visited.include?(q.first)
+            @list[visited.last].each do |adj|
+                q << adj unless visited.include?(adj) || q.include?(adj)
+            end
+        end
+
+        p visited
+
+    end
 
 end
 
 test = Board.new(8)
 
-p test.vertices
+test.breadth_first
