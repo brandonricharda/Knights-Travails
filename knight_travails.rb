@@ -38,19 +38,22 @@ class Board
 
     end
 
-    #breadth_first method works – need to refactor
-    #so that it accepts start and end points
-    #then finds the shortest path between them
+    #breadth_first method works – need to refactor so that it accepts start and end points then finds the shortest path between them
 
     def breadth_first
         visited = []
         q = []
         q << @list.keys[0]
+
+        #I need to update this until loop so that it recognizes when the last visited element is in the last column
+        #from there it needs to jump down and loop backwards across that row, etc
+        #this will allow it to cover all scenarios when we allow the method to accept start and end points
         
         until q.empty?
             visited << q.shift unless visited.include?(q.first)
             @list[visited.last].each do |adj|
-                q << adj unless visited.include?(adj) || q.include?(adj)
+                next if visited.include?(adj) || q.include?(adj)
+                q << adj
             end
         end
 
