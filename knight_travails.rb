@@ -1,10 +1,11 @@
 class Vertex
 
-    attr_accessor :data, :adjacent
+    attr_accessor :data, :adjacent, :distance
 
     def initialize(value)
         @data = value
         @adjacent = []
+        @distance = Float::INFINITY
     end
 
 end
@@ -28,26 +29,52 @@ class Board
         end
 
         @vertices.each_with_index do |vertex, index|
-            #these lines add the node's, predecessor, successor, or underling, respectively
+            #these lines add the node's, predecessor, successor, top, or underling, respectively
             #as long as those items exist and do not "wrap around" the board
             vertex.adjacent << @vertices[index - 1].data unless index == 0 || @vertices[index - 1].data[0] != vertex.data[0]
             vertex.adjacent << @vertices[index + 1].data unless !@vertices[index + 1] || @vertices[index + 1].data[1] == 0
             vertex.adjacent << @vertices[index + @value].data unless !@vertices[index + @value]
+            vertex.adjacent << @vertices[index - @value].data unless !@vertices[index - @value] || vertex.data[0] == 0
             @list[vertex.data] = vertex.adjacent
         end
 
     end
 
-    #breadth_first method works – need to refactor so that it accepts start and end points then finds the shortest path between them
+    def find_vertex(value)
+        
+        pointer = @vertices[0]
+        counter = 0
+
+        until pointer.data == value
+            item = @vertices[counter]
+            counter += 1
+        end
+
+        pointer
+
+    end
+
+    def find_path(first, last)
+        visited = []
+        q = []
+        q << first
+
+        until visited.last == last
+            visited << q.shift unless visited.include?(q.first)
+            @list[visited.last].each do |adj|
+                next if visited.include?(adj) || q.include?(adj)
+                q << adj #add unless condition for if adj takes us farther away from the target node
+            end
+        end
+
+        p visited
+
+    end
 
     def breadth_first
         visited = []
         q = []
         q << @list.keys[0]
-
-        #I need to update this until loop so that it recognizes when the last visited element is in the last column
-        #from there it needs to jump down and loop backwards across that row, etc
-        #this will allow it to cover all scenarios when we allow the method to accept start and end points
         
         until q.empty?
             visited << q.shift unless visited.include?(q.first)
@@ -65,4 +92,4 @@ end
 
 test = Board.new(8)
 
-test.breadth_first
+test.find_path([0, 0], [1, 2])
