@@ -1,11 +1,10 @@
 class Vertex
 
-    attr_accessor :data, :adjacent, :distance
+    attr_accessor :data, :adjacent
 
     def initialize(value)
         @data = value
         @adjacent = []
-        @distance = Float::INFINITY
     end
 
 end
@@ -54,7 +53,12 @@ class Board
 
     end
 
+    #find_path method now snakes its way around the board as intended
+    #need to alter it so that it stops if the pointer is on the same row/col as the target
+    #and moves further in the right direction
+
     def find_path(first, last)
+
         visited = []
         q = []
         q << first
@@ -63,24 +67,7 @@ class Board
             visited << q.shift unless visited.include?(q.first)
             @list[visited.last].each do |adj|
                 next if visited.include?(adj) || q.include?(adj)
-                q << adj #add unless condition for if adj takes us farther away from the target node
-            end
-        end
-
-        p visited
-
-    end
-
-    def breadth_first
-        visited = []
-        q = []
-        q << @list.keys[0]
-        
-        until q.empty?
-            visited << q.shift unless visited.include?(q.first)
-            @list[visited.last].each do |adj|
-                next if visited.include?(adj) || q.include?(adj)
-                q << adj
+                q << adj if q.empty? || @list[q.last].include?(adj)
             end
         end
 
@@ -92,4 +79,4 @@ end
 
 test = Board.new(8)
 
-test.find_path([0, 0], [1, 2])
+test.find_path([0, 0], [7, 7])
