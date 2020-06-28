@@ -53,9 +53,10 @@ class Board
 
     end
 
-    #find_path method now snakes its way around the board as intended
-    #need to alter it so that it stops if the pointer is on the same row/col as the target
-    #and moves further in the right direction
+    #find_path method now finds the shortest path, moving in single unit increments
+    #first it moves horizontally until finding the right column
+    #then it moves vertically until landing at the target node
+    #this was a good exercise but I need to refactor so that it follows the knight's move limitations
 
     def find_path(first, last)
 
@@ -63,7 +64,7 @@ class Board
         q = []
         q << first
 
-        until visited.last == last
+        until visited.last && visited.last[1] == last[1]
             visited << q.shift unless visited.include?(q.first)
             @list[visited.last].each do |adj|
                 next if visited.include?(adj) || q.include?(adj)
@@ -71,7 +72,20 @@ class Board
             end
         end
 
-        p visited
+        q.clear
+
+        q << @list[visited.last].select { |vertex| (vertex[0] - last[0]).abs < (visited.last[0] - last[0]).abs }.first
+
+        until visited.last == last
+            visited << q.shift unless visited.include?(q.first)
+            return visited if visited.last == last
+            @list[visited.last].each do |adj|
+                next if visited.include?(adj) || q.include?(adj)
+                q << adj if (adj[0] - last[0]).abs < (visited.last[0] - last[0]).abs
+            end
+        end
+
+        visited
 
     end
 
@@ -79,4 +93,6 @@ end
 
 test = Board.new(8)
 
-test.find_path([0, 0], [7, 7])
+p test.find_path([2, 7], [0, 0])
+
+p test.find_path([0, 0], [2, 7])
