@@ -57,6 +57,7 @@ class Board
     #first it moves horizontally until finding the right column
     #then it moves vertically until landing at the target node
     #this was a good exercise but I need to refactor so that it follows the knight's move limitations
+    #also worth creating a driver script to ensure it works for all possible combinations
 
     def find_path(first, last)
 
