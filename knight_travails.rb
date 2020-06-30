@@ -13,13 +13,11 @@ class Board
 
     attr_accessor :list, :arr, :vertices
 
-    def initialize(value)
+    def initialize
 
-        @value = value
         @list = {}
-        @arr = []
+        @arr = (0..7).to_a
         @vertices = []
-        0.upto(@value - 1) { |num| @arr << num }
         
         @arr.each do |row|
             @arr.each do |col|
@@ -28,13 +26,14 @@ class Board
         end
 
         @vertices.each_with_index do |vertex, index|
-            #these lines add the node's, predecessor, successor, top, or underling, respectively
-            #as long as those items exist and do not "wrap around" the board
-            vertex.adjacent << @vertices[index - 1].data unless index == 0 || @vertices[index - 1].data[0] != vertex.data[0]
-            vertex.adjacent << @vertices[index + 1].data unless !@vertices[index + 1] || @vertices[index + 1].data[1] == 0
-            vertex.adjacent << @vertices[index + @value].data unless !@vertices[index + @value]
-            vertex.adjacent << @vertices[index - @value].data unless !@vertices[index - @value] || vertex.data[0] == 0
-            @list[vertex.data] = vertex.adjacent
+
+            @vertices.each do |adj|
+                
+                #we need a statement here that determines whether adj is a legal move from vertex
+                #adj.data should be added to the adjacency list if so
+
+            end
+
         end
 
     end
@@ -53,47 +52,42 @@ class Board
 
     end
 
-    #find_path method now finds the shortest path, moving in single unit increments
-    #first it moves horizontally until finding the right column
-    #then it moves vertically until landing at the target node
-    #this was a good exercise but I need to refactor so that it follows the knight's move limitations
-    #also worth creating a driver script to ensure it works for all possible combinations
+    #the find_path algorithm needs to be overhauled completely once we reconfigure the board setup
+    #to accomodate for the knight's movement pattern
 
-    def find_path(first, last)
+    # def find_path(first, last)
 
-        visited = []
-        q = []
-        q << first
+    #     visited = []
+    #     q = []
+    #     q << first
 
-        until visited.last && visited.last[1] == last[1]
-            visited << q.shift unless visited.include?(q.first)
-            @list[visited.last].each do |adj|
-                next if visited.include?(adj) || q.include?(adj)
-                q << adj if q.empty? || @list[q.last].include?(adj)
-            end
-        end
+    #     until visited.last && visited.last[1] == last[1]
+    #         visited << q.shift unless visited.include?(q.first)
+    #         @list[visited.last].each do |adj|
+    #             next if visited.include?(adj) || q.include?(adj)
+    #             q << adj if q.empty? || @list[q.last].include?(adj)
+    #         end
+    #     end
 
-        q.clear
+    #     q.clear
 
-        q << @list[visited.last].select { |vertex| (vertex[0] - last[0]).abs < (visited.last[0] - last[0]).abs }.first
+    #     q << @list[visited.last].select { |vertex| (vertex[0] - last[0]).abs < (visited.last[0] - last[0]).abs }.first
 
-        until visited.last == last
-            visited << q.shift unless visited.include?(q.first)
-            return visited if visited.last == last
-            @list[visited.last].each do |adj|
-                next if visited.include?(adj) || q.include?(adj)
-                q << adj if (adj[0] - last[0]).abs < (visited.last[0] - last[0]).abs
-            end
-        end
+    #     until visited.last == last
+    #         visited << q.shift unless visited.include?(q.first)
+    #         return visited if visited.last == last
+    #         @list[visited.last].each do |adj|
+    #             next if visited.include?(adj) || q.include?(adj)
+    #             q << adj if (adj[0] - last[0]).abs < (visited.last[0] - last[0]).abs
+    #         end
+    #     end
 
-        visited
+    #     visited
 
-    end
+    # end
 
 end
 
-test = Board.new(8)
+test = Board.new
 
-p test.find_path([2, 7], [0, 0])
-
-p test.find_path([0, 0], [2, 7])
+p test.list
