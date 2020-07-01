@@ -25,14 +25,24 @@ class Board
             end
         end
 
+        @res = []
+
         @vertices.each_with_index do |vertex, index|
 
             @vertices.each do |adj|
-                
-                #we need a statement here that determines whether adj is a legal move from vertex
-                #adj.data should be added to the adjacency list if so
+
+                #I believe I solved it – just need to double check and ensure
+
+                height_diff = (adj.data[0] - vertex.data[0]).abs
+                width_diff = (adj.data[1] - vertex.data[1]).abs
+
+                if height_diff + width_diff == 3
+                    vertex.adjacent << adj.data if height_diff == 1 || width_diff == 1
+                end
 
             end
+
+            @list[vertex.data] = vertex.adjacent
 
         end
 
