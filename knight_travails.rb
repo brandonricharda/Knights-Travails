@@ -16,8 +16,17 @@ class Board
     def initialize
 
         @list = {}
+        #sets the board up to be 8 x 8
         @arr = (0..7).to_a
         @vertices = []
+        @legal_move = {
+            #specifies the legal move for the chess piece (knight)
+            #knight moves a total of three squares each time
+            :total_squares => 3,
+            #each move is L-shaped – two squares at the longest end and one at the shortest
+            :longest_part => 2,
+            :shortest_part => 1
+        }
         
         @arr.each do |row|
             @arr.each do |col|
@@ -31,13 +40,11 @@ class Board
 
             @vertices.each do |adj|
 
-                #I believe I solved it – just need to double check and ensure
-
                 height_diff = (adj.data[0] - vertex.data[0]).abs
                 width_diff = (adj.data[1] - vertex.data[1]).abs
 
-                if height_diff + width_diff == 3
-                    vertex.adjacent << adj.data if height_diff == 1 || width_diff == 1
+                if height_diff + width_diff == @legal_move[:total_squares]
+                    vertex.adjacent << adj.data if height_diff == @legal_move[:shortest_part] || width_diff == @legal_move[:shortest_part]
                 end
 
             end
@@ -48,56 +55,47 @@ class Board
 
     end
 
-    def find_vertex(value)
-        
-        pointer = @vertices[0]
-        counter = 0
+    #method works – just need to clean the code up a little bit
 
-        until pointer.data == value
-            item = @vertices[counter]
-            counter += 1
+    def breadth_first(first)
+        visited = []
+        distance = {}
+        q = []
+        q << first
+        distance[first] = 0
+        prev = {}
+
+        until q.empty?
+            visited << q.shift unless visited.include?(q.first)
+            @list[visited.last].each do |adj|
+                unless q.include?(adj) || visited.include?(adj)
+                    q << adj
+                    distance[adj] = distance[visited.last] + 1
+                    prev[adj] = visited.last
+                end
+            end
         end
 
-        pointer
+        prev
 
     end
 
-    #the find_path algorithm needs to be overhauled completely once we reconfigure the board setup
-    #to accomodate for the knight's movement pattern
+    def find_path(first, last)
 
-    # def find_path(first, last)
+        prev = breadth_first(first)
+        result = []
+        result << last
 
-    #     visited = []
-    #     q = []
-    #     q << first
+        until result.last == first
+            result << prev[result.last]
+        end
 
-    #     until visited.last && visited.last[1] == last[1]
-    #         visited << q.shift unless visited.include?(q.first)
-    #         @list[visited.last].each do |adj|
-    #             next if visited.include?(adj) || q.include?(adj)
-    #             q << adj if q.empty? || @list[q.last].include?(adj)
-    #         end
-    #     end
+        result.reverse
 
-    #     q.clear
-
-    #     q << @list[visited.last].select { |vertex| (vertex[0] - last[0]).abs < (visited.last[0] - last[0]).abs }.first
-
-    #     until visited.last == last
-    #         visited << q.shift unless visited.include?(q.first)
-    #         return visited if visited.last == last
-    #         @list[visited.last].each do |adj|
-    #             next if visited.include?(adj) || q.include?(adj)
-    #             q << adj if (adj[0] - last[0]).abs < (visited.last[0] - last[0]).abs
-    #         end
-    #     end
-
-    #     visited
-
-    # end
+    end
 
 end
 
 test = Board.new
 
-p test.list
+p test.find_path([0, 0], [7, 7])
