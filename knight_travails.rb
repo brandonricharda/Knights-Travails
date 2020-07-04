@@ -59,10 +59,8 @@ class Board
 
     def breadth_first(first)
         visited = []
-        distance = {}
         q = []
         q << first
-        distance[first] = 0
         prev = {}
 
         until q.empty?
@@ -70,7 +68,6 @@ class Board
             @list[visited.last].each do |adj|
                 unless q.include?(adj) || visited.include?(adj)
                     q << adj
-                    distance[adj] = distance[visited.last] + 1
                     prev[adj] = visited.last
                 end
             end
@@ -98,4 +95,12 @@ end
 
 test = Board.new
 
-p test.find_path([0, 0], [7, 7])
+keys = test.list.keys
+
+#demonstrates the find_path method for first vertex to every other vertex in the graph
+
+keys.each do |item|
+
+    p test.find_path(keys.first, item)
+
+end
