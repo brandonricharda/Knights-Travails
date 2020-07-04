@@ -55,8 +55,6 @@ class Board
 
     end
 
-    #method works – just need to clean the code up a little bit
-
     def breadth_first(first)
         visited = []
         q = []
